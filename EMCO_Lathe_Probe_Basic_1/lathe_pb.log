@@ -1,0 +1,13 @@
+2026-03-30 20:24:12,553 - qtpyvcp - INFO - Logging to /home/susan/linuxcnc/configs/EMCO_Lathe_Probe_Basic_1/lathe_pb.log
+2026-03-30 20:24:12,553 - qtpyvcp - INFO - QtPyVCP Version: 5.1.0+14.gba8f741e
+2026-03-30 20:24:13,191 - qtpyvcp.utilities.info - INFO - The machine has 2 axes and 2 joints
+2026-03-30 20:24:13,191 - qtpyvcp.utilities.info - INFO - The Axis/Joint mapping is:
+2026-03-30 20:24:13,191 - qtpyvcp.utilities.info - INFO - Axis X --> Joint 0
+2026-03-30 20:24:13,191 - qtpyvcp.utilities.info - INFO - Axis Z --> Joint 1
+2026-03-30 20:24:13,207 - qtpyvcp.utilities.info - WARNING - No [DISPLAY] DEFAULT_SPINDLE_SPEED entry found in INI, using 300rpm
+2026-03-30 20:24:13,417 - qtpyvcp - INFO - Loading global stylesheet: /usr/lib/python3/dist-packages/probe_basic_lathe/probe_basic_lathe.qss
+2026-03-30 20:24:14,493 - qtpyvcp.hal - INFO - Creating new HAL component: qtpyvcp_manualtoolchange
+2026-03-30 20:24:57,322 - qtpyvcp.QtPyVCP.probe_basic_lathe.probe_basic_lathe - INFO - Toggle tooltips: enabled=False
+2026-03-30 20:24:57,322 - qtpyvcp.QtPyVCP.probe_basic_lathe.probe_basic_lathe - INFO - Toggled 0 tooltips
+2026-03-30 20:24:57,322 - qtpyvcp.QtPyVCP.probe_basic_lathe.probe_basic_lathe - INFO - Tool offset mode set to: MASTER_TOOL
+2026-03-30 20:24:57,528 - qtpyvcp.app.launcher - INFO - Loading POSTGUI_HALFILE: /home/susan/linuxcnc/configs/EMCO_Lathe_Probe_Basic_1/custom_postgui.hal
