@@ -1,0 +1,40 @@
+#!/usr/bin/python3
+##
+# Manualmatic Pendant component for LinuxCNC.
+#
+# Sets up hal, linuxcnc, creates the Manualmatic helper class instance
+# then connects to the Manulamatic Pendant over the USB PORT and starts 
+# the poll()ing of the linuscnc user space interface.
+#
+# GPLv2 Licence https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
+# 
+# Copyright (c) 2022 Philip Fletcher <philip.fletcher@stutchbury.com>
+# 
+##
+
+import sys
+import time
+import hal
+import linuxcnc
+
+from Manualmatic import Manualmatic, SerialInterface
+
+
+c = hal.component("manualmatic")
+
+c.newpin("estop-is-activated", hal.HAL_BIT, hal.HAL_OUT)
+
+mm = Manualmatic(linuxcnc, hal, c, SerialInterface())
+
+try:
+  c.ready()
+  mm.start()
+except(KeyboardInterrupt):
+  mm.stop()
+  sys.exit(1)
+
+except Exception as e:
+  print("Exception in manualmatic component")
+  print(e)
+  raise
+  sys.exit(1)
