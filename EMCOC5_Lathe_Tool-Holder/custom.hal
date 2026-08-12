@@ -1,0 +1,72 @@
+# Include your custom HAL commands here
+# This file will not be overwritten when you run PNCconf again
+loadusr -W ./manualmatic EMCO_C5_Lathe.ini
+
+# --- ToolChanger ---
+
+# This block will get overwritten by pcnconfig
+#  ---Use external manual tool change dialog---
+# loadusr -W ./hal_emcotoolchange
+# net tool-change-request    =>  hal_emcotoolchange.change
+# net tool-change-confirmed  <=  hal_emcotoolchange.changed
+# net tool-number            =>  hal_emcotoolchange.number
+
+
+# Set GPIO 47, 48, and 49 as output for tool-number
+setp hm2_7i96s.0.gpio.047.is_output true
+net tool-bit0    hal_emcotoolchange.bit0 => hm2_7i96s.0.gpio.047.out
+setp hm2_7i96s.0.gpio.048.is_output true
+net tool-bit1    hal_emcotoolchange.bit1 => hm2_7i96s.0.gpio.048.out
+setp hm2_7i96s.0.gpio.049.is_output true
+net tool-bit2    hal_emcotoolchange.bit2 => hm2_7i96s.0.gpio.049.out
+
+# Set GPIO 50 as Start Strobe - Active Low
+setp hm2_7i96s.0.gpio.050.is_output true
+setp hm2_7i96s.0.gpio.050.invert_output true
+net tool-start  hal_emcotoolchange.start => hm2_7i96s.0.gpio.050.out
+
+# Set GPIO 44, 45, and 46 as status inputs
+net tool-ready   hm2_7i96s.0.gpio.044.in => hal_emcotoolchange.ready
+net tool-busy    hm2_7i96s.0.gpio.045.in => hal_emcotoolchange.busy
+net tool-finish  hm2_7i96s.0.gpio.046.in => hal_emcotoolchange.finish
+
+
+# Cut from pcnconf updatef .hal file - using Digital Pin selection for P1
+
+# --- DOUT-00 ---
+#setp hm2_7i96s.0.gpio.047.is_output true
+#net dout-00  =>     hm2_7i96s.0.gpio.047.out
+
+# --- DOUT-01 ---
+#setp hm2_7i96s.0.gpio.048.is_output true
+#net dout-01  =>     hm2_7i96s.0.gpio.048.out
+
+# --- DOUT-02 ---
+#setp hm2_7i96s.0.gpio.049.is_output true
+#net dout-02  =>     hm2_7i96s.0.gpio.049.out
+
+# --- DOUT-03 ---
+#setp hm2_7i96s.0.gpio.050.is_output true
+#net dout-03  =>     hm2_7i96s.0.gpio.050.out
+
+# --- DIN-00 ---
+#net din-00     <=  hm2_7i96s.0.gpio.044.in
+
+# --- DIN-01 ---
+#net din-01     <=  hm2_7i96s.0.gpio.045.in
+
+# --- DIN-02 ---
+#net din-02     <=  hm2_7i96s.0.gpio.046.in
+
+# And...
+
+#  ---digital in / out signals---
+
+#net dout-00     <=  motion.digital-out-00
+#net dout-01     <=  motion.digital-out-01
+#net dout-02     <=  motion.digital-out-02
+#net dout-03     <=  motion.digital-out-03
+#net din-00     =>  motion.digital-in-00
+#net din-01     =>  motion.digital-in-01
+#net din-02     =>  motion.digital-in-02
+

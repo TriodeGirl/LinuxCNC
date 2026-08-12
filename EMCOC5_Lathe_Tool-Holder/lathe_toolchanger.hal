@@ -1,0 +1,19 @@
+# --- ToolChanger ---
+
+# Set GPIO 47, 48, and 49 as output for tool-number
+setp hm2_7i96s.0.gpio.047.is_output true
+net tool-bit0    hm2_7i96s.0.gpio.047.out <= iocontrol.0.tool-bit0
+setp hm2_7i96s.0.gpio.048.is_output true
+net tool-bit1    hm2_7i96s.0.gpio.048.out <= iocontrol.0.tool-bit1
+setp hm2_7i96s.0.gpio.049.is_output true
+net tool-bit2    hm2_7i96s.0.gpio.049.out <= iocontrol.0.tool-bit2
+
+# Set GPIO 50 as Start Strobe - Active Low
+setp hm2_7i96s.0.gpio.050.is_output true
+setp hm2_7i96s.0.gpio.050.invert true
+net tool-start   hm2_7i96s.0.gpio.050.out <= iocontrol.0.tool-start
+
+# Set GPIO 44, 45, and 46 as status inputs
+net tool-ready   hm2_7i96s.0.gpio.044.in => iocontrol.0.tool-ready
+net tool-busy    hm2_7i96s.0.gpio.045.in => iocontrol.0.tool-busy
+net tool-finish  hm2_7i96s.0.gpio.046.in => iocontrol.0.tool-finish

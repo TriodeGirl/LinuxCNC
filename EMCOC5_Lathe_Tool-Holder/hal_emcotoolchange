@@ -1,0 +1,119 @@
+#! /usr/bin/python3
+import sys, os
+import gettext
+BASE = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), ".."))
+
+gettext.install("linuxcnc", localedir=os.path.join(BASE, "share", "locale"))
+
+import linuxcnc, hal, time
+
+h = hal.component("hal_emcotoolchange")
+h.newpin("number", hal.HAL_S32, hal.HAL_IN)
+h.newpin("change", hal.HAL_BIT, hal.HAL_IN)
+h.newpin("change_button", hal.HAL_BIT, hal.HAL_IN)
+h.newpin("changed", hal.HAL_BIT, hal.HAL_OUT)
+h.newpin("tool", hal.HAL_S32, hal.HAL_OUT)
+h.newpin("bit0", hal.HAL_BIT, hal.HAL_OUT)
+h.newpin("bit1", hal.HAL_BIT, hal.HAL_OUT)
+h.newpin("bit2", hal.HAL_BIT, hal.HAL_OUT)
+h.newpin("bit3", hal.HAL_BIT, hal.HAL_OUT)
+h.newpin("start", hal.HAL_BIT, hal.HAL_OUT)
+h.newpin("ready", hal.HAL_BIT, hal.HAL_IN)
+h.newpin("busy", hal.HAL_BIT, hal.HAL_IN)
+h.newpin("finish", hal.HAL_BIT, hal.HAL_IN)
+h.ready()
+
+_after = None
+def hal_in_background():
+    global _after
+    _after = None
+    if not h.change:
+        app.tk.call("set", "::tkPriv(button)", -1)
+        return
+
+    if (h.change_button):
+        h.changed = True
+        app.update()
+        app.tk.call("set", "::tkPriv(button)", -1)
+        stop_polling_hal_in_background()
+        return
+
+    _after = app.after(100, hal_in_background)
+
+def poll_hal_in_background():
+    global _after
+    _after = app.after(100, hal_in_background)
+
+def stop_polling_hal_in_background():
+    global _after
+    if _after: app.after_cancel(_after)
+    _after = None
+
+def do_change(n):
+    if n == 7:
+        message = _("Activate TailStock, click continue when ready")
+    elif n:
+        message = _("Selecting tool %d, click continue when ready") % n
+    else:
+        message = _("Retract TailStock, click continue when ready")
+    app.wm_withdraw()
+    app.update()
+    poll_hal_in_background()
+    try:
+        r = app.tk.call("nf_dialog", ".tool_change",
+            _("Tool change"), message, "info", 0, _("Continue"))
+    finally:
+        stop_polling_hal_in_background()
+    if isinstance(r, str): r = int(r)
+    if r == 0:
+        h.changed = True
+    app.update()
+
+
+import nf, rs274.options
+
+import tkinter
+
+app = tkinter.Tk(className="AxisToolChanger")
+app.wm_geometry("-60-60")
+app.wm_title(_("AXIS EMCO Toolchanger"))
+rs274.options.install(app)
+nf.start(app); nf.makecommand(app, "_", _)
+app.wm_protocol("WM_DELETE_WINDOW", app.wm_withdraw)
+lab = tkinter.Message(app, aspect=500, text = _("\
+This window is part of the AXIS EMCO toolchanger. \
+It will close automatically after a few seconds."))
+lab.pack()
+
+def withdraw():
+    app.wm_withdraw()
+    app.bind("<Expose>", lambda event: app.wm_withdraw())
+
+app.after(10 * 1000, withdraw)
+
+try:
+    while 1:
+        change = h.change
+        if change and not h.changed:
+            timeout = 30.0
+            start_time = time.time()
+            h['bit0'] = bool(h.number & 1)
+            h['bit1'] = bool(h.number & 2)
+            h['bit2'] = bool(h.number & 4)
+            h['start'] = True
+# Uncomment to have pop-up to confirm tool change
+#            do_change(h.number)
+            while not h['finish']:
+               if(time.time() - start_time) > timeout:
+                    h['start'] = False
+                    self.ser_errotmsg("Toolchange Timed Out!")
+               time.sleep(0.01)
+            status_in = h['finish']
+            h['start'] = False
+            h.changed = True
+        elif not change:
+            h.changed = False
+        app.after(100)
+        app.update()
+except KeyboardInterrupt:
+    pass
